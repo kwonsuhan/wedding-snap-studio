@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>웨딩 촬영 스튜디오 후보 비교</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #FAF8F5;
+      --card-bg: #FFFFFF;
+      --text-main: #2C2926;
+      --text-sub: #6E675F;
+      --accent: #A68A64;
+      --accent-light: #EFE9E1;
+      --border: #E6DFD5;
+      --shadow: 0 12px 32px rgba(44, 41, 38, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 상단 진행 바 */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background-color: var(--accent);
+      transition: width 0.35s ease;
+      z-index: 100;
+    }
+
+    /* 슬라이드 컨테이너 */
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+
+    .slide {
+      display: none;
+      min-height: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 40px 28px 80px;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 표지 슬라이드 */
+    .cover {
+      text-align: center;
+      align-items: center;
+    }
+
+    .cover .subtitle {
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .cover h1 {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+
+    .cover p {
+      color: var(--text-sub);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      max-width: 540px;
+      margin-bottom: 36px;
+    }
+
+    .btn-primary {
+      background-color: var(--text-main);
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent);
+    }
+
+    /* 요약 비교표 슬라이드 */
+    .section-header {
+      margin-bottom: 24px;
+    }
+
+    .section-header .badge {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .section-header h2 {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    }
+
+    .table-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background-color: #F4EFE8;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: #FCFBF9;
+    }
+
+    .jump-link {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .jump-link:hover {
+      text-decoration: underline;
+    }
+
+    /* 상세 스튜디오 카드 */
+    .studio-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .studio-info {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .studio-num {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .studio-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .price-tag {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 8px 14px;
+      border-radius: 10px;
+      width: fit-content;
+    }
+
+    .info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .info-list li {
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .info-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin-bottom: 2px;
+    }
+
+    .tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      background: #F4F1EC;
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 500;
+    }
+
+    .tag.highlight {
+      background: #EAE0D2;
+      color: #6B5335;
+      font-weight: 700;
+    }
+
+    .ext-link {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 18px;
+      border: 1px solid var(--text-main);
+      border-radius: 10px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s;
+    }
+
+    .ext-link:hover {
+      background: var(--text-main);
+      color: #fff;
+    }
+
+    /* 갤러리 그리드 */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .gallery-grid.five-items {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .photo-box {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #EFECE6;
+      aspect-ratio: 3 / 4;
+      cursor: zoom-in;
+      border: 1px solid var(--border);
+    }
+
+    .photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      display: block;
+    }
+
+    .photo-box:hover img {
+      transform: scale(1.04);
+    }
+
+    .photo-caption {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    /* 하단 내비게이션 바 */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent-light);
+      border-color: var(--accent);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .slide-counter {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .slide-select {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      background: #fff;
+    }
+
+    /* 이미지 확대 모달 */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 18, 16, 0.88);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      cursor: zoom-out;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    @media (max-width: 860px) {
+      .studio-card {
+        grid-template-columns: 1fr;
+      }
+      .gallery-grid, .gallery-grid.five-items {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .slide {
+        padding: 24px 16px 84px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="slides-wrapper" id="slidesWrapper">
+
+    <!-- #1 표지 -->
+    <section class="slide cover active" data-title="표지">
+      <div class="subtitle">Wedding Studio Archive</div>
+      <h1>웨딩 촬영 스튜디오<br>후보 리스트 &amp; 비교</h1>
+      <p>총 7곳의 렌탈 스튜디오 위치, 시간당 대관료, 구비 물품 및 공간 무드를 한눈에 비교하기 위해 정리한 가이드입니다.</p>
+      <button class="btn-primary" onclick="goToSlide(2)">비교표부터 살펴보기 →</button>
+    </section>
+
+    <!-- #2 전체 요약 비교표 -->
+    <section class="slide" data-title="전체 요약 비교표">
+      <div class="section-header">
+        <span class="badge">OVERVIEW</span>
+        <h2>스튜디오 7곳 한눈에 비교하기</h2>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>스튜디오</th>
+              <th>시간당 가격</th>
+              <th>인근 역</th>
+              <th>공간 특징</th>
+              <th>구비 물품</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a class="jump-link" onclick="goToSlide(3)">1. 로프트</a></td>
+              <td>19,000원</td>
+              <td>신설동역</td>
+              <td>가성비 중심</td>
+              <td>고대기, 드라이기, 스팀다리미, 이동거울</td>
+            </tr>
+            <tr>
+              <td><a class="jump-link" onclick="goToSlide(4)">2. 키노</a></td>
+              <td>77,000원</td>
+              <td>증산역</td>
+              <td><strong>마당 있음</strong></td>
+              <td>없음</td>
+            </tr>
+            <tr>
+              <td><a class="jump-link" onclick="goToSlide(5)">3. 마므레</a></td>
+              <td>80,000원</td>
+              <td>경복궁역</td>
+              <td><strong>2층, 마당 있음</strong></td>
+              <td>행거, 이동거울, 스팀다리미, 멀티탭</td>
+            </tr>
+            <tr>
+              <td><a class="jump-link" onclick="goToSlide(6)">4. 하우즈</a></td>
+              <td>60,000원</td>
+              <td>역촌역</td>
+              <td><strong>우드화이트</strong></td>
+              <td>스팀다리미, 행거</td>
+            </tr>
+            <tr>
+              <td><a class="jump-link" onclick="goToSlide(7)">5. 빌라드플뤼</a></td>
+              <td>60,000원</td>
+              <td>금천구청역</td>
+              <td><strong>2층, 마당 있음</strong></td>
+              <td>스팀다리미, 전신거울, 행거, 멀티탭</td>
+            </tr>
+            <tr>
+              <td><a class="jump-link" onclick="goToSlide(8)">6. 아마르</a></td>
+              <td>16,000원</td>
+              <td>신대방역</td>
+              <td>최저가 / 조명 구비</td>
+              <td>전문조명, 스팀다리미, 행거</td>
+            </tr>
+            <tr>
+              <td><a class="jump-link" onclick="goToSlide(9)">7. 스튜디오 225</a></td>
+              <td>55,000원</td>
+              <td>장한평역</td>
+              <td><strong>아치게이트</strong></td>
+              <td>전문조명, 행거, 스팀다리미, 이동거울</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- #3 1. 로프트 -->
+    <section class="slide" data-title="1. 로프트">
+      <div class="studio-card">
+        <div class="studio-info">
+          <div>
+            <div class="studio-num">CANDIDATE 01</div>
+            <h2 class="studio-title">로프트</h2>
+          </div>
+          <div class="price-tag">시간당 19,000원</div>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">위치</span>
+              신설동역 (서울특별시 동대문구 난계로26길 51)
+            </li>
+            <li>
+              <span class="info-label">공간 특징</span>
+              <div class="tag-group"><span class="tag">특이사항 없음</span></div>
+            </li>
+            <li>
+              <span class="info-label">구비 물품</span>
+              <div class="tag-group">
+                <span class="tag">고대기</span>
+                <span class="tag">드라이기</span>
+                <span class="tag">스팀다리미</span>
+                <span class="tag">이동거울</span>
+              </div>
+            </li>
+          </ul>
+          <a class="ext-link" href="https://www.spacecloud.kr/space/80089" target="_blank" rel="noopener">스페이스클라우드 상세보기 ↗</a>
+        </div>
+        <div class="gallery-grid">
+          <div class="photo-box" onclick="openLightbox('loft1.png')"><img src="loft1.png" alt="로프트 1"><span class="photo-caption">1 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('loft2.png')"><img src="loft2.png" alt="로프트 2"><span class="photo-caption">2 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('loft3.png')"><img src="loft3.png" alt="로프트 3"><span class="photo-caption">3 / 3</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- #4 2. 키노 -->
+    <section class="slide" data-title="2. 키노">
+      <div class="studio-card">
+        <div class="studio-info">
+          <div>
+            <div class="studio-num">CANDIDATE 02</div>
+            <h2 class="studio-title">키노</h2>
+          </div>
+          <div class="price-tag">시간당 77,000원</div>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">위치</span>
+              증산역 (서울특별시 은평구 증산로9길 26-23)
+            </li>
+            <li>
+              <span class="info-label">공간 특징</span>
+              <div class="tag-group"><span class="tag highlight">마당 있음</span></div>
+            </li>
+            <li>
+              <span class="info-label">구비 물품</span>
+              <div class="tag-group"><span class="tag">없음</span></div>
+            </li>
+          </ul>
+          <a class="ext-link" href="https://hourplace.co.kr/place/52317" target="_blank" rel="noopener">아워플레이스 상세보기 ↗</a>
+        </div>
+        <div class="gallery-grid five-items">
+          <div class="photo-box" onclick="openLightbox('kino1.png')"><img src="kino1.png" alt="키노 1"><span class="photo-caption">1 / 5</span></div>
+          <div class="photo-box" onclick="openLightbox('kino2.png')"><img src="kino2.png" alt="키노 2"><span class="photo-caption">2 / 5</span></div>
+          <div class="photo-box" onclick="openLightbox('kino3.png')"><img src="kino3.png" alt="키노 3"><span class="photo-caption">3 / 5</span></div>
+          <div class="photo-box" onclick="openLightbox('kino4.png')"><img src="kino4.png" alt="키노 4"><span class="photo-caption">4 / 5</span></div>
+          <div class="photo-box" onclick="openLightbox('kino5.png')"><img src="kino5.png" alt="키노 5"><span class="photo-caption">5 / 5</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- #5 3. 마므레 -->
+    <section class="slide" data-title="3. 마므레">
+      <div class="studio-card">
+        <div class="studio-info">
+          <div>
+            <div class="studio-num">CANDIDATE 03</div>
+            <h2 class="studio-title">마므레</h2>
+          </div>
+          <div class="price-tag">시간당 80,000원</div>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">위치</span>
+              경복궁역 (서울특별시 종로구 경희궁1길 33-7)
+            </li>
+            <li>
+              <span class="info-label">공간 특징</span>
+              <div class="tag-group">
+                <span class="tag highlight">2층 구조</span>
+                <span class="tag highlight">마당 있음</span>
+              </div>
+            </li>
+            <li>
+              <span class="info-label">구비 물품</span>
+              <div class="tag-group">
+                <span class="tag">행거</span>
+                <span class="tag">이동거울</span>
+                <span class="tag">스팀다리미</span>
+                <span class="tag">멀티탭</span>
+              </div>
+            </li>
+          </ul>
+          <a class="ext-link" href="https://www.instagram.com/mamre_studio/" target="_blank" rel="noopener">인스타그램 바로가기 ↗</a>
+        </div>
+        <div class="gallery-grid">
+          <div class="photo-box" onclick="openLightbox('mamure1.png')"><img src="mamure1.png" alt="마므레 1"><span class="photo-caption">1 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('mamure2.png')"><img src="mamure2.png" alt="마므레 2"><span class="photo-caption">2 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('mamure3.png')"><img src="mamure3.png" alt="마므레 3"><span class="photo-caption">3 / 3</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- #6 4. 하우즈 -->
+    <section class="slide" data-title="4. 하우즈">
+      <div class="studio-card">
+        <div class="studio-info">
+          <div>
+            <div class="studio-num">CANDIDATE 04</div>
+            <h2 class="studio-title">하우즈</h2>
+          </div>
+          <div class="price-tag">시간당 60,000원</div>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">위치</span>
+              역촌역 (서울 은평구 은평로 155 2층 하우즈 스튜디오)
+            </li>
+            <li>
+              <span class="info-label">공간 특징</span>
+              <div class="tag-group"><span class="tag highlight">우드화이트</span></div>
+            </li>
+            <li>
+              <span class="info-label">구비 물품</span>
+              <div class="tag-group">
+                <span class="tag">스팀다리미</span>
+                <span class="tag">행거</span>
+              </div>
+            </li>
+          </ul>
+          <a class="ext-link" href="https://www.spacecloud.kr/space/66484" target="_blank" rel="noopener">스페이스클라우드 상세보기 ↗</a>
+        </div>
+        <div class="gallery-grid">
+          <div class="photo-box" onclick="openLightbox('houz1.png')"><img src="houz1.png" alt="하우즈 1"><span class="photo-caption">1 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('houz2.png')"><img src="houz2.png" alt="하우즈 2"><span class="photo-caption">2 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('houz3.png')"><img src="houz3.png" alt="하우즈 3"><span class="photo-caption">3 / 3</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- #7 5. 빌라드플뤼 -->
+    <section class="slide" data-title="5. 빌라드플뤼">
+      <div class="studio-card">
+        <div class="studio-info">
+          <div>
+            <div class="studio-num">CANDIDATE 05</div>
+            <h2 class="studio-title">빌라드플뤼</h2>
+          </div>
+          <div class="price-tag">시간당 60,000원</div>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">위치</span>
+              금천구청역 (서울 금천구 시흥대로 40마길 1)
+            </li>
+            <li>
+              <span class="info-label">공간 특징</span>
+              <div class="tag-group">
+                <span class="tag highlight">2층 구조</span>
+                <span class="tag highlight">마당 있음</span>
+              </div>
+            </li>
+            <li>
+              <span class="info-label">구비 물품</span>
+              <div class="tag-group">
+                <span class="tag">스팀다리미</span>
+                <span class="tag">전신거울</span>
+                <span class="tag">행거</span>
+                <span class="tag">멀티탭</span>
+              </div>
+            </li>
+          </ul>
+          <a class="ext-link" href="https://www.instagram.com/villa_de_pluie/" target="_blank" rel="noopener">인스타그램 바로가기 ↗</a>
+        </div>
+        <div class="gallery-grid">
+          <div class="photo-box" onclick="openLightbox('vile1.png')"><img src="vile1.png" alt="빌라드플뤼 1"><span class="photo-caption">1 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('vile2.png')"><img src="vile2.png" alt="빌라드플뤼 2"><span class="photo-caption">2 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('vile3.png')"><img src="vile3.png" alt="빌라드플뤼 3"><span class="photo-caption">3 / 3</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- #8 6. 아마르 -->
+    <section class="slide" data-title="6. 아마르">
+      <div class="studio-card">
+        <div class="studio-info">
+          <div>
+            <div class="studio-num">CANDIDATE 06</div>
+            <h2 class="studio-title">아마르</h2>
+          </div>
+          <div class="price-tag">시간당 16,000원</div>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">위치</span>
+              신대방역 (서울 관악구 남부순환로 1507 402호)
+            </li>
+            <li>
+              <span class="info-label">공간 특징</span>
+              <div class="tag-group"><span class="tag">특이사항 없음</span></div>
+            </li>
+            <li>
+              <span class="info-label">구비 물품</span>
+              <div class="tag-group">
+                <span class="tag highlight">전문조명</span>
+                <span class="tag">스팀다리미</span>
+                <span class="tag">행거</span>
+              </div>
+            </li>
+          </ul>
+          <a class="ext-link" href="https://www.spacecloud.kr/space/40685" target="_blank" rel="noopener">스페이스클라우드 상세보기 ↗</a>
+        </div>
+        <div class="gallery-grid">
+          <div class="photo-box" onclick="openLightbox('amar1.png')"><img src="amar1.png" alt="아마르 1"><span class="photo-caption">1 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('amar2.png')"><img src="amar2.png" alt="아마르 2"><span class="photo-caption">2 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('amar3.png')"><img src="amar3.png" alt="아마르 3"><span class="photo-caption">3 / 3</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- #9 7. 스튜디오 225 -->
+    <section class="slide" data-title="7. 스튜디오 225">
+      <div class="studio-card">
+        <div class="studio-info">
+          <div>
+            <div class="studio-num">CANDIDATE 07</div>
+            <h2 class="studio-title">스튜디오 225</h2>
+          </div>
+          <div class="price-tag">시간당 55,000원</div>
+          <ul class="info-list">
+            <li>
+              <span class="info-label">위치</span>
+              장한평역 (서울 동대문구 장한로9길 8)
+            </li>
+            <li>
+              <span class="info-label">공간 특징</span>
+              <div class="tag-group"><span class="tag highlight">아치게이트</span></div>
+            </li>
+            <li>
+              <span class="info-label">구비 물품</span>
+              <div class="tag-group">
+                <span class="tag highlight">전문조명</span>
+                <span class="tag">행거</span>
+                <span class="tag">스팀다리미</span>
+                <span class="tag">이동거울</span>
+              </div>
+            </li>
+          </ul>
+          <a class="ext-link" href="https://www.spacecloud.kr/space/76781" target="_blank" rel="noopener">스페이스클라우드 상세보기 ↗</a>
+        </div>
+        <div class="gallery-grid">
+          <div class="photo-box" onclick="openLightbox('eeo1.png')"><img src="eeo1.png" alt="스튜디오 225 1"><span class="photo-caption">1 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('eeo2.png')"><img src="eeo2.png" alt="스튜디오 225 2"><span class="photo-caption">2 / 3</span></div>
+          <div class="photo-box" onclick="openLightbox('eeo3.png')"><img src="eeo3.png" alt="스튜디오 225 3"><span class="photo-caption">3 / 3</span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 하단 컨트롤 바 -->
+  <nav class="nav-bar">
+    <div class="nav-controls">
+      <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← 이전</button>
+      <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">다음 →</button>
+    </div>
+
+    <div class="slide-counter" id="slideCounter">1 / 9</div>
+
+    <select class="slide-select" id="slideSelect" onchange="goToSlide(Number(this.value))" aria-label="슬라이드 선택"></select>
+  </nav>
+
+  <!-- 사진 확대 라이트박스 -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightboxImg" src="" alt="확대 이미지">
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideCounter = document.getElementById('slideCounter');
+    const slideSelect = document.getElementById('slideSelect');
+    const progressBar = document.getElementById('progressBar');
+    const slidesWrapper = document.getElementById('slidesWrapper');
+    let currentSlide = 1;
+
+    // 드롭다운 목차 초기화
+    slides.forEach((slide, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx + 1;
+      opt.textContent = `#${idx + 1} ${slide.dataset.title}`;
+      slideSelect.appendChild(opt);
+    });
+
+    function renderSlide(num) {
+      if (num < 1) num = 1;
+      if (num > totalSlides) num = totalSlides;
+      currentSlide = num;
+
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx + 1 === currentSlide);
+      });
+
+      prevBtn.disabled = currentSlide === 1;
+      nextBtn.disabled = currentSlide === totalSlides;
+      slideCounter.textContent = `${currentSlide} / ${totalSlides}`;
+      slideSelect.value = currentSlide;
+      progressBar.style.width = `${(currentSlide / totalSlides) * 100}%`;
+      slidesWrapper.scrollTop = 0;
+
+      if (window.location.hash !== `#${currentSlide}`) {
+        history.replaceState(null, '', `#${currentSlide}`);
+      }
+    }
+
+    function changeSlide(delta) {
+      renderSlide(currentSlide + delta);
+    }
+
+    function goToSlide(num) {
+      renderSlide(num);
+    }
+
+    // URL 해시(#1 ~ #9) 연동
+    function syncFromHash() {
+      const hashNum = parseInt(window.location.hash.replace('#', ''), 10);
+      if (!isNaN(hashNum) && hashNum >= 1 && hashNum <= totalSlides) {
+        renderSlide(hashNum);
+      } else {
+        renderSlide(1);
+      }
+    }
+
+    window.addEventListener('hashchange', syncFromHash);
+
+    // 키보드 방향키 및 ESC 지원
+    document.addEventListener('keydown', (e) => {
+      const lightbox = document.getElementById('lightbox');
+      if (lightbox.classList.contains('open')) {
+        if (e.key === 'Escape') closeLightbox();
+        return;
+      }
+      if (e.key === 'ArrowRight') changeSlide(1);
+      if (e.key === 'ArrowLeft') changeSlide(-1);
+    });
+
+    // 이미지 확대 보기
+    function openLightbox(src) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImg');
+      img.src = src;
+      lightbox.classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+
+    syncFromHash();
+  </script>
+</body>
+</html>
