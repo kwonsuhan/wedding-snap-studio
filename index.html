@@ -898,12 +898,7 @@
     function closeLightbox() {
       document.getElementById('lightbox').classList.remove('open');
     }
-// URL 파라미터(?zoom=120 등)로 화면 배율 조절
-    const urlParams = new URLSearchParams(window.location.search);
-    const zoomParam = parseFloat(urlParams.get('zoom'));
-    if (!isNaN(zoomParam) && zoomParam >= 50 && zoomParam <= 200) {
-      document.body.style.zoom = `${zoomParam}%`;
-    }
+    document.body.style.zoom = "115%";
     syncFromHash();
   </script>
 </body>
